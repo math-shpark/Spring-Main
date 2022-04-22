@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.mybatis.model.dao.studentDao">
+	<insert id="insert" parameterType="student">
+		INSERT INTO student
+		VALUES (#{snum}, #{sname}, #{sgrade});
+	</insert>
+
+	<select id="selectOne" resultType="student" parameterType="int">
+		SELECT *
+		FROM student
+		WHERE snum = #{snum}
+	</select>
+	
+	<select id="selectAll" resultType="student">
+		SELECT *
+		FROM student
+	</select>
+</mapper>
