@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+	<!-- Service 클래스 scan -->
+	<context:component-scan base-package="com.ssafy.board.model.service"></context:component-scan>
+	
+	<!-- MyBatis 연동 -->
+	<!-- 1. DataSource를 등록한다. -->
+	<!-- 
+		bean의 id는 다음 단계에서 DataSource bean을 호출할 때 사용할 이름이다.
+		property의 name 속성은 임의로 지정하는 것이 아닌 정해져 있는 값이다.
+		driverClassName : 사용할 jdbc driver
+		url : MySQL 연결 링크
+		username : 사용할 DB 계정 사용자 이름
+		password : 사용할 DB 계정 비밀번호
+	 -->
+	<bean class="org.springframework.jdbc.datasource.DriverManagerDataSource" id="dataSource">
+		<property name="driverClassName" value="com.mysql.cj.jdbc.Driver"></property>
+		<property name="url" value="jdbc:mysql://localhost:3306/ssafy_board?serverTimezone=UTC"></property>
+		<property name="username" value="ssafy"></property>
+		<property name="password" value="ssafy"></property>
+	</bean>
+
+	<!-- 2. SqlSessionFactory을 등록한다. -->
+	<!-- 
+		1단계에서 입력한 DB 정보를 기반으로 session을 생성하는 SqlSessionFactory bean을 등록한다.
+		dataSource : 1단계에서 등록한 DataSource Bean
+		typeAliasesPackage : value에 입력한 경로에 있는 DTO 클래스들의 별칭 등록
+		mapperLocations : value에 저장된 Mapper XML 파일 위치 등록
+	 -->
+	<bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFactory">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="typeAliasesPackage" value="com.ssafy.board.model.dto"></property>
+		<property name="mapperLocations" value="classpath:/mapper/*Mapper.xml"></property>
+	</bean>
+
+	<!-- 3. Mapper Interface을 등록한다. -->
+	<!-- 
+		2단계에서 생성한 SqlSessionFactory가 session을 열고
+		mapperInterface에 사용하려는 MyBatis Interface를 등록한다.
+		sqlSessionFactory : 2단계에서 등록한 SqlSessionFactory Bean
+		mappereInterface : value에 사용하려는 MyBatis Interface 파일의 세부 경로를 입력
+	 -->
+	<bean class="org.mybatis.spring.mapper.MapperFactoryBean" id="userDao">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory"></property>
+		<property name="mapperInterface"
+			value="com.ssafy.board.model.dao.UserDAO"></property>
+	</bean>
+	<bean class="org.mybatis.spring.mapper.MapperFactoryBean"
+		id="boardDao">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory"></property>
+		<property name="mapperInterface"
+			value="com.ssafy.board.model.dao.BoardDAO"></property>
+	</bean>
+
+	<!-- Transaction -->
+	<!-- 1. TransactionManager 연결 -->
+	<!-- 
+		사용하려는 DataSource에 TransactionManager를 연결한다.
+	 -->
+	<bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager" id="transactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	<!-- 2. Anotation Driven 등록 -->
+	<!-- 
+		AOP 방식으로 직접 Transaction 처리하는 방식이 아닌
+		Service 클래스에 적용하려는 메소드 위에 Transactional이라는 Annotation을 붙이는 것으로
+		Transaction 처리를 하기 위해 등록한다.
+	 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+</beans>

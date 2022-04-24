@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee https://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	<!-- web.xml은 프로젝트 환경 설정을 위한 설정 파일이다. -->
+
+	<!-- root-context.xml 등록 -->
+	<!-- 
+		ContextLoarderLister가 설정 파일로 인식하여 읽을 수 있게
+		param-name은 contextConfigLocation으로 입력하고
+		param-value에 root-context.xml의 경로를 입력한다.
+		root-context.xml은 view와 관련되지 않는 객체를 정의하는 설정 파일이다.
+	 -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/spring/root-context.xml</param-value>
+	</context-param>
+
+	<!-- contextConfigLocation 이름으로 등록된 설정 파일들을 읽는다. -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+	<!-- servlet-context.xml 등록 -->
+	<!-- 
+		servlet-context.xml은 Servlet 요청과 관련된 객체를 정의하는 설정 파일이다.
+		servlet-name에 입력한 이름으로 하단의 servlet-mapping 태그에서 호출한다.
+	 -->
+	<servlet>
+		<servlet-name>appServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<!-- url-pattern에서 지정한 명령을 입력 받으면
+		입력한 servlet-name을 servlet-name으로 갖는 servlet 태그를 호출한다. -->
+	<servlet-mapping>
+		<servlet-name>appServlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+	<!-- 요청을 전송할 때 UTF-8로 인코딩하도록 filter를 등록한다. -->
+	<filter>
+		<filter-name>encoding</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter
+		</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>encoding</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+</web-app>
