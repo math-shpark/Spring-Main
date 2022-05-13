@@ -4,7 +4,7 @@
   "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
 	<typeAliases>
-		<typeAlias type="com.ssafy.mybatis.model.dto.Student"
+		<typeAlias type="com.ssafy.jdbc.model.dto.Student"
 			alias="student" />
 	</typeAliases>
 	<environments default="development">
@@ -13,12 +13,13 @@
 			<dataSource type="POOLED">
 				<property name="driver" value="com.mysql.cj.jdbc.Driver" />
 				<property name="url" value="jdbc:mysql://localhost:3306/ssafy_board?serverTimezone=UTC" />
-				<property name="username" value="ssafy" />
-				<property name="password" value="ssafy" />
+				<property name="username" value="root" />
+				<property name="password" value="root" />
 			</dataSource>
 		</environment>
 	</environments>
 	<mappers>
 		<mapper resource="mapper/studentMapper.xml" />
+<!-- 		<mapper class="com.ssafy.jdbc.model.dao.StudentDao"/> -->
 	</mappers>
 </configuration>

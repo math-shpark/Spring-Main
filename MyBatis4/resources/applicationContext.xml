@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	<context:component-scan
+		base-package="com.ssafy.mybatis.model.dao"></context:component-scan>
+
+	<bean
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+		id="dataSource">
+		<property name="driverClassName"
+			value="com.mysql.cj.jdbc.Driver"></property>
+		<property name="url"
+			value="jdbc:mysql://localhost:3306/ssafy_board?serverTimezone=UTC"></property>
+		<property name="username" value="ssafy"></property>
+		<property name="password" value="ssafy"></property>
+	</bean>
+	<bean class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+<!-- 스프링 마이바티스 연동 -->
+	<!-- SqlSessionFacotry를 Bean으로 등록 -->
+	<bean class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="typeAliasesPackage" value="com.ssafy.mybatis.model.dto"></property>
+		<property name="mapperLocations" value ="classpath:/mapper/studentMapper.xml"></property>
+	</bean>
+
+	<!-- 1. transactionManager를 dataSource를 먹여서 생성해서 빈으로 등록. -->
+	<bean
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+		id="transactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<!-- 2. aop에서 동작할 transaction advice를 작성 -->
+	<!-- <tx:advice transaction-manager="transactionManager" id="txAdvice"> -->
+	<!-- <tx:attributes> -->
+	<!-- <tx:method name="*" rollback-for="Exception"/> -->
+	<!-- </tx:attributes> -->
+	<!-- </tx:advice> -->
+	<!-- 3. advice 를 aop에 태운다. -->
+	<!-- <aop:config> -->
+	<!-- <aop:advisor advice-ref="txAdvice" -->
+	<!-- pointcut="execution(* com.ssafy.jdbc..*.register*(..))"/> -->
+	<!-- </aop:config> -->
+
+	<!-- 0. transaction에 대해 annotation-driven -->
+	<tx:annotation-driven
+		transaction-manager="transactionManager" />
+</beans>
